@@ -1,6 +1,6 @@
 KOKKOS_DEVICES=Cuda
 KOKKOS_CUDA_OPTIONS=enable_lambda
-KOKKOS_ARCH = "SNB,Kepler35"
+KOKKOS_ARCH = "Power9,Volta"
 
 
 KOKKOS_PATH = ../kokkos
