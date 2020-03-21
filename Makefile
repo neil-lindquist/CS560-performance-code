@@ -15,10 +15,10 @@ default: build
 
 ifneq (,$(findstring Cuda,$(KOKKOS_DEVICES)))
 CXX = ${KOKKOS_PATH}/bin/nvcc_wrapper
-EXE = bytes_and_flops.cuda
+EXE = test.cuda
 else
 CXX = g++
-EXE = bytes_and_flops.host
+EXE = test.host
 endif
 
 CXXFLAGS ?= -O3 -g
