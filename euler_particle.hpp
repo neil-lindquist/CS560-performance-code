@@ -30,7 +30,11 @@ struct euler_particles {
 
 	std::vector<uint64_t> times;
 
-	euler_particles(size_t n) : n(n), particles("euler_particles::particles", n){
+	euler_particles(size_t n) : n(n), particles("euler_particles::particles", n) {
+		setup();
+	}
+
+	void setup() {
 		Kokkos::parallel_for(n, KOKKOS_LAMBDA(const size_t& i) {
 			particles(i, 0) = 5*i;
 			particles(i, 1) = 2.4*i - 10000;

@@ -19,6 +19,10 @@ struct copy {
 	std::vector<uint64_t> times;
 
 	copy(size_t n) : n(n), src("copy::src", n), dst("copy::dst", n) {
+		setup();
+	}
+
+	void setup() {
 		Kokkos::parallel_for(n, KOKKOS_LAMBDA(const size_t& i) {
 			for (int j = 0; j < 6; j++) {
 				src(i, j) = i;
