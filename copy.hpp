@@ -23,25 +23,25 @@ struct copy {
 	}
 
 	void setup() {
-		Kokkos::parallel_for(n, KOKKOS_LAMBDA(const size_t& i) {
-			for (int j = 0; j < 6; j++) {
-				src(i, j) = i;
-				dst(i, j) = 0;
-			}
-		});
+		Kokkos::deep_copy(src, double(n));
+		Kokkos::deep_copy(dst, double(0));
 		Kokkos::fence();
 	}
 
 	void test() {
 		// time copy kernel
 		auto t1 = std::chrono::high_resolution_clock::now();
-		Kokkos::parallel_for(n, KOKKOS_LAMBDA(const size_t& i) {
+		Kokkos::parallel_for("copy::test", n, KOKKOS_LAMBDA(const size_t& i) {
 			for (int j = 0; j < 6; j++) {
 				dst(i, j) = src(i, j);
 			}
 		});
 		Kokkos::fence();
 		auto t2 = std::chrono::high_resolution_clock::now();
+
+		// reset for next iteration
+		Kokkos::deep_copy(dst, double(0));
+		Kokkos::fence();
 
 		times.push_back(std::chrono::duration_cast<std::chrono::nanoseconds>(t2 - t1).count());
 	}

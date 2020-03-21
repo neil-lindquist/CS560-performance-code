@@ -35,7 +35,8 @@ struct euler_particles {
 	}
 
 	void setup() {
-		Kokkos::parallel_for(n, KOKKOS_LAMBDA(const size_t& i) {
+		Kokkos::parallel_for("euler_particles::setup", n,
+				KOKKOS_LAMBDA(const size_t& i) {
 			particles(i, 0) = 5*i;
 			particles(i, 1) = 2.4*i - 10000;
 			particles(i, 2) = 0.87*(i*i);
@@ -48,13 +49,14 @@ struct euler_particles {
 			particles(i, 7) = 2.0/(n-i*i);
 			particles(i, 8) = 1.0/(i*i);
 		});
+		Kokkos::fence();
 	}
 
 
 	void test() {
 		// time copy kernel
 		auto t1 = std::chrono::high_resolution_clock::now();
-		Kokkos::parallel_for(n, KOKKOS_LAMBDA(const size_t& i) {
+		Kokkos::parallel_for("euler_particles::test", n, KOKKOS_LAMBDA(const size_t& i) {
 			const double dt = 0.001;
 
 			particles(i, 3) += dt*particles(i, 6);
