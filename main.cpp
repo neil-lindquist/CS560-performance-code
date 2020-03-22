@@ -20,14 +20,14 @@ constexpr double t_values_99[] = {
 
 // Computes mean, standard deviation, ect of the execution times for the given test
 template<class Test>
-void compute_stats(Test& t, size_t tests) {
+void compute_stats(const Test& t, const size_t trials) {
 	// total time in ns
 	size_t total = 0;
 	for (size_t time : t.times) {
 		total += time;
 	}
 	// mean time in ns
-	const size_t mean = total/tests;
+	const size_t mean = total/trials;
 
 	// ensure that overflow does not happen
 	double total_varience = 0;
@@ -36,36 +36,25 @@ void compute_stats(Test& t, size_t tests) {
 		total_varience += double(diff)*double(diff);
 	}
 	// sample standard deviation
-	const double std_dev = std::sqrt(total_varience/(tests-1));
+	const double std_dev = std::sqrt(total_varience/(trials-1));
 
-	const double ci_99 = t_values_99[(tests <= 40?tests:40)-1]*std_dev/std::sqrt(tests);
+	const double ci_99 = t_values_99[(trials <= 40?trials:40)-1]*std_dev/std::sqrt(trials);
 
 	std::cout << "Mean: " << mean/1000.0/1000.0 << " (ms); "
 			<< "Stdev: " << std_dev/1000.0/1000.0  << " (ms); "
 			<< "99% CI: " << ci_99/1000.0/1000.0 << " (ms)" <<  std::endl;
 }
 
-void run_tests(size_t n, size_t tests) {
-	copy<Kokkos::LayoutLeft> copy_left (n);
-	copy<Kokkos::LayoutRight> copy_right (n);
-	euler_particles<Kokkos::LayoutLeft> euler_left (n);
-	euler_particles<Kokkos::LayoutRight> euler_right (n);
+template<class Test>
+void run_test(const char* name, const size_t n, const size_t trials) {
+	Test test (n);
 
-	for (size_t i = 0; i < tests; i++) {
-		copy_left.test();
-		copy_right.test();
-		euler_left.test();
-		euler_right.test();
+	for (size_t i = 0; i < trials; i++) {
+		test.test();
 	}
 
-	std::cout << "copy  left:  ";
-	compute_stats(copy_left, tests);
-	std::cout << "copy  right: ";
-	compute_stats(copy_right, tests);
-	std::cout << "euler left:  ";
-	compute_stats(euler_left, tests);
-	std::cout << "euler right: ";
-	compute_stats(euler_right, tests);
+	std::cout << name << "  ";
+	compute_stats(test, trials);
 }
 
 int main(int argc, char* argv[]) {
@@ -78,9 +67,12 @@ int main(int argc, char* argv[]) {
 	}
 
 	const size_t n = atoi(argv[1]);
-	const size_t tests = atoi(argv[2]);
+	const size_t trials = atoi(argv[2]);
 
-	run_tests(n, tests);
+	run_test<copy<Kokkos::LayoutLeft>>("copy  left ", n, trials);
+	run_test<copy<Kokkos::LayoutRight>>("copy  right", n, trials);
+	run_test<euler_particles<Kokkos::LayoutLeft>>("euler left ", n, trials);
+	run_test<euler_particles<Kokkos::LayoutRight>>("euler right", n, trials);
 
 	Kokkos::finalize();
 }
