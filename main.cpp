@@ -8,6 +8,7 @@
 
 #include "copy.hpp"
 #include "euler_particle.hpp"
+#include "capacity.hpp"
 
 
 // t values for 99% confidence iterval
@@ -73,6 +74,8 @@ int main(int argc, char* argv[]) {
 	run_test<copy<Kokkos::LayoutRight>>("copy  right", n, trials);
 	run_test<euler_particles<Kokkos::LayoutLeft>>("euler left ", n, trials);
 	run_test<euler_particles<Kokkos::LayoutRight>>("euler right", n, trials);
+  run_test<capacity<SoA>>("capacity SoA ", n, trials);
+  run_test<capacity<AoS>>("capacity AoS ", n, trials);
 
 	Kokkos::finalize();
 }
