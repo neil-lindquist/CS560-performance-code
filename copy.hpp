@@ -47,5 +47,75 @@ struct copy {
 	}
 };
 
+// Copy test implementing using the ViewOfStructs type
+template<class Layout>
+struct copy_vos {
+  const size_t n;
+
+  using struct_type = Kokkos::Struct<double, double, double, double, double, double>;
+  static constexpr auto field_0 = Kokkos::Field<0>();
+  static constexpr auto field_1 = Kokkos::Field<1>();
+  static constexpr auto field_2 = Kokkos::Field<2>();
+  static constexpr auto field_3 = Kokkos::Field<3>();
+  static constexpr auto field_4 = Kokkos::Field<4>();
+  static constexpr auto field_5 = Kokkos::Field<5>();
+
+  Kokkos::ViewOfStructs<struct_type*, Layout> src;
+  Kokkos::ViewOfStructs<struct_type*, Layout> dst;
+
+  std::vector<uint64_t> times;
+
+  copy_vos(size_t n) : n(n), src("copy_vos::src", n), dst("copy::dst", n) {
+    setup();
+  }
+
+  void setup() {
+    Kokkos::parallel_for("copy_vos::setup", n, KOKKOS_LAMBDA(const size_t& i) {
+      src(i, field_0) = n;
+      src(i, field_1) = n;
+      src(i, field_2) = n;
+      src(i, field_3) = n;
+      src(i, field_4) = n;
+      src(i, field_5) = n;
+      dst(i, field_0) = 0;
+      dst(i, field_1) = 0;
+      dst(i, field_2) = 0;
+      dst(i, field_3) = 0;
+      dst(i, field_4) = 0;
+      dst(i, field_5) = 0;
+    });
+    Kokkos::fence();
+  }
+
+	void test() {
+		// time copy kernel
+		auto t1 = std::chrono::high_resolution_clock::now();
+		Kokkos::parallel_for("copy_vos::test", n, KOKKOS_LAMBDA(const size_t& i) {
+      dst(i, field_0) = src(i, field_0);
+      dst(i, field_1) = src(i, field_1);
+      dst(i, field_2) = src(i, field_2);
+      dst(i, field_3) = src(i, field_3);
+      dst(i, field_4) = src(i, field_4);
+      dst(i, field_5) = src(i, field_5);
+		});
+		Kokkos::fence();
+		auto t2 = std::chrono::high_resolution_clock::now();
+
+		// reset for next iteration
+    Kokkos::parallel_for("copy_vos::test_reset", n, KOKKOS_LAMBDA(const size_t& i) {
+      dst(i, field_0) = 0;
+      dst(i, field_1) = 0;
+      dst(i, field_2) = 0;
+      dst(i, field_3) = 0;
+      dst(i, field_4) = 0;
+      dst(i, field_5) = 0;
+    });
+		Kokkos::fence();
+
+		times.push_back(std::chrono::duration_cast<std::chrono::nanoseconds>(t2 - t1).count());
+	}
+
+};
+
 
 #endif // COPY_HPP
