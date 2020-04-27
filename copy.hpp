@@ -65,7 +65,7 @@ struct copy_vos {
 
   std::vector<uint64_t> times;
 
-  copy_vos(size_t n) : n(n), src("copy_vos::src", n), dst("copy::dst", n) {
+  copy_vos(size_t n) : n(n), src("copy_vos::src", n), dst("copy_vos::dst", n) {
     setup();
   }
 
