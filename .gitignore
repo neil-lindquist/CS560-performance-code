@@ -1,0 +1,8 @@
+
+
+*.o
+*.a
+*.cuda
+*.host
+
+KokkosCore_config.*
