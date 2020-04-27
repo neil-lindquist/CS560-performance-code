@@ -59,13 +59,14 @@ void run_test(const char* name, const size_t n, const size_t trials) {
 }
 
 int main(int argc, char* argv[]) {
-	Kokkos::initialize();
-
 	if (argc < 3) {
 		printf("Arguments: N tests\n");
 		printf("  N:   Number of vector entries\n");
 		printf("  tests: number of times each kernels should be run\n");
+        return 1;
 	}
+
+	Kokkos::initialize();
 
 	const size_t n = atoi(argv[1]);
 	const size_t trials = atoi(argv[2]);
