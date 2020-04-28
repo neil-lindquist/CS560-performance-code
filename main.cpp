@@ -7,6 +7,7 @@
 #include<iostream>
 
 #include "copy.hpp"
+#include "copy_mixed.hpp"
 #include "euler_particle.hpp"
 #include "capacity.hpp"
 
@@ -71,14 +72,22 @@ int main(int argc, char* argv[]) {
 	const size_t n = atoi(argv[1]);
 	const size_t trials = atoi(argv[2]);
 
-	run_test<copy<Kokkos::LayoutLeft>>("copy  left ", n, trials);
-	run_test<copy<Kokkos::LayoutRight>>("copy  right", n, trials);
-	run_test<copy_struct<Kokkos::LayoutLeft>>("copy1 left ", n, trials);
-	run_test<copy_struct<Kokkos::LayoutRight>>("copy1 right", n, trials);
-	run_test<copy_vos<Kokkos::LayoutLeft>>("copy2 left ", n, trials);
-	run_test<copy_vos<Kokkos::LayoutRight>>("copy2 right", n, trials);
-	run_test<euler_particles<Kokkos::LayoutLeft>>("euler left ", n, trials);
-	run_test<euler_particles<Kokkos::LayoutRight>>("euler right", n, trials);
+    std::cout << "Copy kernel with only doubles" << std::endl;
+	run_test<copy<Kokkos::LayoutLeft>>("copy 2dview left ", n, trials);
+	run_test<copy<Kokkos::LayoutRight>>("copy 2dview right", n, trials);
+	run_test<copy_struct<Kokkos::LayoutLeft>>("copy        left ", n, trials);
+	run_test<copy_struct<Kokkos::LayoutRight>>("copy        right", n, trials);
+	run_test<copy_vos<Kokkos::LayoutLeft>>("copy VoS    left ", n, trials);
+	run_test<copy_vos<Kokkos::LayoutRight>>("copy VoS    right", n, trials);
+    std::cout << "Copy kernel with mixed types" << std::endl;
+	run_test<copy_mixed<Kokkos::LayoutLeft>>("copy        left ", n, trials);
+	run_test<copy_mixed<Kokkos::LayoutRight>>("copy        right", n, trials);
+	run_test<copy_mixed_vos<Kokkos::LayoutLeft>>("copy VoS    left ", n, trials);
+	run_test<copy_mixed_vos<Kokkos::LayoutRight>>("copy VoS    right", n, trials);
+    std::cout << "Euler particle simulation" << std::endl;
+	run_test<euler_particles<Kokkos::LayoutLeft>>("euler       left ", n, trials);
+	run_test<euler_particles<Kokkos::LayoutRight>>("euler       right", n, trials);
+    std::cout << "Memory usage" << std::endl;
   run_test<capacity<SoA>>("capacity SoA ", n, trials);
   run_test<capacity<AoS>>("capacity AoS ", n, trials);
 
