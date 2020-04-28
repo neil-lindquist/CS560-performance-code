@@ -73,6 +73,8 @@ int main(int argc, char* argv[]) {
 
 	run_test<copy<Kokkos::LayoutLeft>>("copy  left ", n, trials);
 	run_test<copy<Kokkos::LayoutRight>>("copy  right", n, trials);
+	run_test<copy_struct<Kokkos::LayoutLeft>>("copy1 left ", n, trials);
+	run_test<copy_struct<Kokkos::LayoutRight>>("copy1 right", n, trials);
 	run_test<copy_vos<Kokkos::LayoutLeft>>("copy2 left ", n, trials);
 	run_test<copy_vos<Kokkos::LayoutRight>>("copy2 right", n, trials);
 	run_test<euler_particles<Kokkos::LayoutLeft>>("euler left ", n, trials);
