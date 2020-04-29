@@ -20,10 +20,11 @@ struct copy_mixed<Kokkos::LayoutRight> {
 
   struct object {
 
-    object()
+    KOKKOS_INLINE_FUNCTION object()
       : object(0, 0, 0, 0, 0, 0, 0, 0) {
     }
 
+    KOKKOS_INLINE_FUNCTION
     object(double f0, float f1, int32_t f2, uint32_t f3, uint16_t f4, int16_t f5, int64_t f6, uint64_t f7)
       : field0(f0), field1(f1), field2(f2), field3(f3), field4(f4), field5(f5), field6(f6), field7(f7) {
     }
@@ -172,15 +173,6 @@ struct copy_mixed_vos {
   const size_t n;
 
   using struct_type = Kokkos::Struct<double, float, int32_t, uint32_t, int16_t, uint16_t, int64_t, uint64_t>;
-  static constexpr auto field_0 = Kokkos::Field<0>();
-  static constexpr auto field_1 = Kokkos::Field<1>();
-  static constexpr auto field_2 = Kokkos::Field<2>();
-  static constexpr auto field_3 = Kokkos::Field<3>();
-  static constexpr auto field_4 = Kokkos::Field<4>();
-  static constexpr auto field_5 = Kokkos::Field<5>();
-  static constexpr auto field_6 = Kokkos::Field<6>();
-  static constexpr auto field_7 = Kokkos::Field<7>();
-
   Kokkos::ViewOfStructs<struct_type*, Layout> src;
   Kokkos::ViewOfStructs<struct_type*, Layout> dst;
 
@@ -191,6 +183,15 @@ struct copy_mixed_vos {
   }
 
   void setup() {
+    constexpr auto field_0 = Kokkos::Field<0>();
+    constexpr auto field_1 = Kokkos::Field<1>();
+    constexpr auto field_2 = Kokkos::Field<2>();
+    constexpr auto field_3 = Kokkos::Field<3>();
+    constexpr auto field_4 = Kokkos::Field<4>();
+    constexpr auto field_5 = Kokkos::Field<5>();
+    constexpr auto field_6 = Kokkos::Field<6>();
+    constexpr auto field_7 = Kokkos::Field<7>();
+
     Kokkos::parallel_for("copy_vos::setup", n, KOKKOS_LAMBDA(const size_t& i) {
       src(i, field_0) = n;
       src(i, field_1) = n;
@@ -213,7 +214,16 @@ struct copy_mixed_vos {
     Kokkos::fence();
   }
 
-	void test() {
+  void test() {
+    constexpr auto field_0 = Kokkos::Field<0>();
+    constexpr auto field_1 = Kokkos::Field<1>();
+    constexpr auto field_2 = Kokkos::Field<2>();
+    constexpr auto field_3 = Kokkos::Field<3>();
+    constexpr auto field_4 = Kokkos::Field<4>();
+    constexpr auto field_5 = Kokkos::Field<5>();
+    constexpr auto field_6 = Kokkos::Field<6>();
+    constexpr auto field_7 = Kokkos::Field<7>();
+
 		// time copy kernel
 		auto t1 = std::chrono::high_resolution_clock::now();
 		Kokkos::parallel_for("copy_vos::test", n, KOKKOS_LAMBDA(const size_t& i) {

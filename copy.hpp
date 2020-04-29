@@ -58,11 +58,11 @@ struct copy_struct<Kokkos::LayoutRight> {
 
   struct object {
 
-    object()
+    KOKKOS_INLINE_FUNCTION object()
       : object(0.0) {
     }
 
-    object(double i)
+    KOKKOS_INLINE_FUNCTION object(double i)
       : field0(i), field1(i), field2(i), field3(i), field4(i), field5(i) {
     }
 
@@ -210,6 +210,13 @@ struct copy_vos {
   }
 
   void setup() {
+    constexpr auto field_0 = Kokkos::Field<0>();
+    constexpr auto field_1 = Kokkos::Field<1>();
+    constexpr auto field_2 = Kokkos::Field<2>();
+    constexpr auto field_3 = Kokkos::Field<3>();
+    constexpr auto field_4 = Kokkos::Field<4>();
+    constexpr auto field_5 = Kokkos::Field<5>();
+
     Kokkos::parallel_for("copy_vos::setup", n, KOKKOS_LAMBDA(const size_t& i) {
       src(i, field_0) = n;
       src(i, field_1) = n;
@@ -227,7 +234,14 @@ struct copy_vos {
     Kokkos::fence();
   }
 
-	void test() {
+  void test() {
+    constexpr auto field_0 = Kokkos::Field<0>();
+    constexpr auto field_1 = Kokkos::Field<1>();
+    constexpr auto field_2 = Kokkos::Field<2>();
+    constexpr auto field_3 = Kokkos::Field<3>();
+    constexpr auto field_4 = Kokkos::Field<4>();
+    constexpr auto field_5 = Kokkos::Field<5>();
+
 		// time copy kernel
 		auto t1 = std::chrono::high_resolution_clock::now();
 		Kokkos::parallel_for("copy_vos::test", n, KOKKOS_LAMBDA(const size_t& i) {
