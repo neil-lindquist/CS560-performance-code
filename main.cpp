@@ -89,6 +89,8 @@ int main(int argc, char* argv[]) {
   std::cout << "Euler particle simulation" << std::endl;
   run_test<euler_particles<Kokkos::LayoutLeft>>("euler       left ", n, trials);
   run_test<euler_particles<Kokkos::LayoutRight>>("euler       right", n, trials);
+  run_test<euler_particles_vos<Kokkos::LayoutLeft>>("euler sov   left ", n, trials);
+  run_test<euler_particles_vos<Kokkos::LayoutRight>>("euler sov   right", n, trials);
 
   std::cout << "Memory usage" << std::endl;
   run_test<capacity<SoA>>("capacity SoA ", n, trials);
