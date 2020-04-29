@@ -11,40 +11,40 @@
 
 template<class Layout>
 struct copy {
-	const size_t n;
+  const size_t n;
 
-	Kokkos::View<double*[6], Layout> src;
-	Kokkos::View<double*[6], Layout> dst;
+  Kokkos::View<double*[6], Layout> src;
+  Kokkos::View<double*[6], Layout> dst;
 
-	std::vector<uint64_t> times;
+  std::vector<uint64_t> times;
 
-	copy(size_t n) : n(n), src("copy::src", n), dst("copy::dst", n) {
-		setup();
-	}
+  copy(size_t n) : n(n), src("copy::src", n), dst("copy::dst", n) {
+    setup();
+  }
 
-	void setup() {
-		Kokkos::deep_copy(src, double(n));
-		Kokkos::deep_copy(dst, double(0));
-		Kokkos::fence();
-	}
+  void setup() {
+    Kokkos::deep_copy(src, double(n));
+    Kokkos::deep_copy(dst, double(0));
+    Kokkos::fence();
+  }
 
-	void test() {
-		// time copy kernel
-		auto t1 = std::chrono::high_resolution_clock::now();
-		Kokkos::parallel_for("copy::test", n, KOKKOS_LAMBDA(const size_t& i) {
-			for (int j = 0; j < 6; j++) {
-				dst(i, j) = src(i, j);
-			}
-		});
-		Kokkos::fence();
-		auto t2 = std::chrono::high_resolution_clock::now();
+  void test() {
+    // time copy kernel
+    auto t1 = std::chrono::high_resolution_clock::now();
+    Kokkos::parallel_for("copy::test", n, KOKKOS_LAMBDA(const size_t& i) {
+      for (int j = 0; j < 6; j++) {
+        dst(i, j) = src(i, j);
+      }
+    });
+    Kokkos::fence();
+    auto t2 = std::chrono::high_resolution_clock::now();
 
-		// reset for next iteration
-		Kokkos::deep_copy(dst, double(0));
-		Kokkos::fence();
+    // reset for next iteration
+    Kokkos::deep_copy(dst, double(0));
+    Kokkos::fence();
 
-		times.push_back(std::chrono::duration_cast<std::chrono::nanoseconds>(t2 - t1).count());
-	}
+    times.push_back(std::chrono::duration_cast<std::chrono::nanoseconds>(t2 - t1).count());
+  }
 };
 
 template<class Layout>
@@ -79,36 +79,36 @@ struct copy_struct<Kokkos::LayoutRight> {
 
   std::vector<uint64_t> times;
 
-	copy_struct(size_t n) : n(n), src("copy_struct::src", n), dst("copy_struct::dst", n) {
-		setup();
-	}
+  copy_struct(size_t n) : n(n), src("copy_struct::src", n), dst("copy_struct::dst", n) {
+    setup();
+  }
 
-	void setup() {
-		Kokkos::deep_copy(src, object(n));
-		Kokkos::deep_copy(dst, object(0));
-		Kokkos::fence();
-	}
+  void setup() {
+    Kokkos::deep_copy(src, object(n));
+    Kokkos::deep_copy(dst, object(0));
+    Kokkos::fence();
+  }
 
-	void test() {
-		// time copy kernel
-		auto t1 = std::chrono::high_resolution_clock::now();
-		Kokkos::parallel_for("copy_struct::test", n, KOKKOS_LAMBDA(const size_t& i) {
-		  dst(i).field0 = src(i).field0;
-		  dst(i).field1 = src(i).field1;
-		  dst(i).field2 = src(i).field2;
-		  dst(i).field3 = src(i).field3;
-		  dst(i).field4 = src(i).field4;
-		  dst(i).field5 = src(i).field5;
-		});
-		Kokkos::fence();
-		auto t2 = std::chrono::high_resolution_clock::now();
+  void test() {
+    // time copy kernel
+    auto t1 = std::chrono::high_resolution_clock::now();
+    Kokkos::parallel_for("copy_struct::test", n, KOKKOS_LAMBDA(const size_t& i) {
+      dst(i).field0 = src(i).field0;
+      dst(i).field1 = src(i).field1;
+      dst(i).field2 = src(i).field2;
+      dst(i).field3 = src(i).field3;
+      dst(i).field4 = src(i).field4;
+      dst(i).field5 = src(i).field5;
+    });
+    Kokkos::fence();
+    auto t2 = std::chrono::high_resolution_clock::now();
 
-		// reset for next iteration
-		Kokkos::deep_copy(dst, object(0));
-		Kokkos::fence();
+    // reset for next iteration
+    Kokkos::deep_copy(dst, object(0));
+    Kokkos::fence();
 
-		times.push_back(std::chrono::duration_cast<std::chrono::nanoseconds>(t2 - t1).count());
-	}
+    times.push_back(std::chrono::duration_cast<std::chrono::nanoseconds>(t2 - t1).count());
+  }
 };
 
 template <>
@@ -140,51 +140,51 @@ struct copy_struct<Kokkos::LayoutLeft> {
 
   std::vector<uint64_t> times;
 
-	copy_struct(size_t n) : n(n), src(n), dst(n) {
-		setup();
-	}
+  copy_struct(size_t n) : n(n), src(n), dst(n) {
+    setup();
+  }
 
-	void setup() {
-		Kokkos::deep_copy(src.field0, double(n));
-		Kokkos::deep_copy(src.field1, double(n));
-		Kokkos::deep_copy(src.field2, double(n));
-		Kokkos::deep_copy(src.field3, double(n));
-		Kokkos::deep_copy(src.field4, double(n));
-		Kokkos::deep_copy(src.field5, double(n));
-		Kokkos::deep_copy(dst.field0, double(0));
-		Kokkos::deep_copy(dst.field1, double(0));
-		Kokkos::deep_copy(dst.field2, double(0));
-		Kokkos::deep_copy(dst.field3, double(0));
-		Kokkos::deep_copy(dst.field4, double(0));
-		Kokkos::deep_copy(dst.field5, double(0));
-		Kokkos::fence();
-	}
+  void setup() {
+    Kokkos::deep_copy(src.field0, double(n));
+    Kokkos::deep_copy(src.field1, double(n));
+    Kokkos::deep_copy(src.field2, double(n));
+    Kokkos::deep_copy(src.field3, double(n));
+    Kokkos::deep_copy(src.field4, double(n));
+    Kokkos::deep_copy(src.field5, double(n));
+    Kokkos::deep_copy(dst.field0, double(0));
+    Kokkos::deep_copy(dst.field1, double(0));
+    Kokkos::deep_copy(dst.field2, double(0));
+    Kokkos::deep_copy(dst.field3, double(0));
+    Kokkos::deep_copy(dst.field4, double(0));
+    Kokkos::deep_copy(dst.field5, double(0));
+    Kokkos::fence();
+  }
 
-	void test() {
-		// time copy kernel
-		auto t1 = std::chrono::high_resolution_clock::now();
-		Kokkos::parallel_for("copy_struct::test", n, KOKKOS_LAMBDA(const size_t& i) {
-		  dst.field0(i) = src.field0(i);
-		  dst.field1(i) = src.field1(i);
-		  dst.field2(i) = src.field2(i);
-		  dst.field3(i) = src.field3(i);
-		  dst.field4(i) = src.field4(i);
-		  dst.field5(i) = src.field5(i);
-		});
-		Kokkos::fence();
-		auto t2 = std::chrono::high_resolution_clock::now();
+  void test() {
+    // time copy kernel
+    auto t1 = std::chrono::high_resolution_clock::now();
+    Kokkos::parallel_for("copy_struct::test", n, KOKKOS_LAMBDA(const size_t& i) {
+      dst.field0(i) = src.field0(i);
+      dst.field1(i) = src.field1(i);
+      dst.field2(i) = src.field2(i);
+      dst.field3(i) = src.field3(i);
+      dst.field4(i) = src.field4(i);
+      dst.field5(i) = src.field5(i);
+    });
+    Kokkos::fence();
+    auto t2 = std::chrono::high_resolution_clock::now();
 
-		// reset for next iteration
-		Kokkos::deep_copy(dst.field0, double(0));
-		Kokkos::deep_copy(dst.field1, double(0));
-		Kokkos::deep_copy(dst.field2, double(0));
-		Kokkos::deep_copy(dst.field3, double(0));
-		Kokkos::deep_copy(dst.field4, double(0));
-		Kokkos::deep_copy(dst.field5, double(0));
-		Kokkos::fence();
+    // reset for next iteration
+    Kokkos::deep_copy(dst.field0, double(0));
+    Kokkos::deep_copy(dst.field1, double(0));
+    Kokkos::deep_copy(dst.field2, double(0));
+    Kokkos::deep_copy(dst.field3, double(0));
+    Kokkos::deep_copy(dst.field4, double(0));
+    Kokkos::deep_copy(dst.field5, double(0));
+    Kokkos::fence();
 
-		times.push_back(std::chrono::duration_cast<std::chrono::nanoseconds>(t2 - t1).count());
-	}
+    times.push_back(std::chrono::duration_cast<std::chrono::nanoseconds>(t2 - t1).count());
+  }
 };
 
 // Copy test implementing using the ViewOfStructs type
@@ -242,20 +242,20 @@ struct copy_vos {
     constexpr auto field_4 = Kokkos::Field<4>();
     constexpr auto field_5 = Kokkos::Field<5>();
 
-		// time copy kernel
-		auto t1 = std::chrono::high_resolution_clock::now();
-		Kokkos::parallel_for("copy_vos::test", n, KOKKOS_LAMBDA(const size_t& i) {
+    // time copy kernel
+    auto t1 = std::chrono::high_resolution_clock::now();
+    Kokkos::parallel_for("copy_vos::test", n, KOKKOS_LAMBDA(const size_t& i) {
       dst(i, field_0) = src(i, field_0);
       dst(i, field_1) = src(i, field_1);
       dst(i, field_2) = src(i, field_2);
       dst(i, field_3) = src(i, field_3);
       dst(i, field_4) = src(i, field_4);
       dst(i, field_5) = src(i, field_5);
-		});
-		Kokkos::fence();
-		auto t2 = std::chrono::high_resolution_clock::now();
+    });
+    Kokkos::fence();
+    auto t2 = std::chrono::high_resolution_clock::now();
 
-		// reset for next iteration
+    // reset for next iteration
     Kokkos::parallel_for("copy_vos::test_reset", n, KOKKOS_LAMBDA(const size_t& i) {
       dst(i, field_0) = 0;
       dst(i, field_1) = 0;
@@ -264,10 +264,10 @@ struct copy_vos {
       dst(i, field_4) = 0;
       dst(i, field_5) = 0;
     });
-		Kokkos::fence();
+    Kokkos::fence();
 
-		times.push_back(std::chrono::duration_cast<std::chrono::nanoseconds>(t2 - t1).count());
-	}
+    times.push_back(std::chrono::duration_cast<std::chrono::nanoseconds>(t2 - t1).count());
+  }
 
 };
 
