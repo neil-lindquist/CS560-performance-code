@@ -58,14 +58,7 @@ struct copy_mixed<Kokkos::LayoutRight> {
 		// time copy kernel
 		auto t1 = std::chrono::high_resolution_clock::now();
 		Kokkos::parallel_for("copy_struct::test", n, KOKKOS_LAMBDA(const size_t& i) {
-		  dst(i).field0 = src(i).field0;
-		  dst(i).field1 = src(i).field1;
-		  dst(i).field2 = src(i).field2;
-		  dst(i).field3 = src(i).field3;
-		  dst(i).field4 = src(i).field4;
-		  dst(i).field5 = src(i).field5;
-                  dst(i).field6 = src(i).field6;
-                  dst(i).field7 = src(i).field7;
+          dst(i) = src(i);
 		});
 		Kokkos::fence();
 		auto t2 = std::chrono::high_resolution_clock::now();
